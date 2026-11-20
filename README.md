@@ -1,5 +1,7 @@
 # LabPilot AI — 科研数据智能审计与复现助手
 
+> **在线体验（真后端）**：http://8.163.38.73:8000 —— 上传自己的 CSV、跑审计 / 统计 / 图表 / 报告，全部实时计算，不是演示快照。
+
 Qoder 高校创造力大赛 StudyHack 赛道，个人参赛，目标冲击一等奖。
 硬截止：2026-11-30 18:00。完整方案见 `../your_files/labpilot-ai-xiang-mu-fang-an/labpilot-ai-xiang-mu-fang-an.pdf`（v2，18 页）。
 
