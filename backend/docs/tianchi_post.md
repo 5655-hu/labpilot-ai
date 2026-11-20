@@ -137,7 +137,14 @@ Qoder 账号：`____________`（待填，形如 nickxxxxxxxx）
 - [ ] 后端 API 地址（公网，浏览器直接访问 `/health` 应返回 JSON）
 - [ ] 源码仓库地址（GitHub）
 - [ ] Qoder 账号名
-- [ ] 截图插入：首页 / 审计 / 统计 / 图表 / 报告 / 档案 / 分组比较（**用真实页面截图**）
+- [ ] 截图插入（7 张真实页面截图已在 `backend/docs/screenshots/`，按此顺序贴）：
+  1. `01-dashboard.png` 首页 —— 3 个数据集 / 476 行 / 20 次分析，均为真实计数
+  2. `02-audit-dirty.png` 审计 —— 质量分 **97.95**，16 缺失 / 6 重复 / 14 个待确认异常
+  3. `03-stats-pearson.png` 统计 —— 描述统计表 + Pearson 矩阵（dose-response 0.9851）
+  4. `04-charts-regression.png` 图表 —— 散点 + 拟合线，`response = 2.5241·dose + 1.2063`，R² 0.9703
+  5. `05-report.png` 报告 —— 规则版报告、文件哈希、质量分 100
+  6. `06-archive.png` 档案 —— SHA-256、Python 3.12.10、依赖版本、清洗规则、重跑包
+  7. `07-compare.png` 分组比较 —— Shapiro-Wilk / Levene 前提、t = −20.2034、Cohen's d = −3.2992
 - [ ] 小红书笔记链接回填到第九节
 - [ ] 发布后自查：链接可点开、图片正常显示、排版无错乱
 - [ ] 隔天用手机流量再打开一次，确认公开可访问
