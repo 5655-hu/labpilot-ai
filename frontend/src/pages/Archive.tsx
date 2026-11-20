@@ -144,14 +144,20 @@ export default function Archive() {
                       {archive.dataset.name} · 档案版本 {archive.archive_version} · 归档于 {archive.archived_at}
                     </p>
                   </div>
-                  <a
-                    href={archiveExportUrl(archive.analysis_id)}
-                    download
-                    data-testid="archive-export"
-                    className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700"
-                  >
-                    下载重跑包（JSON）
-                  </a>
+                  {archiveExportUrl(archive.analysis_id) ? (
+                    <a
+                      href={archiveExportUrl(archive.analysis_id)}
+                      download
+                      data-testid="archive-export"
+                      className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700"
+                    >
+                      下载重跑包（JSON）
+                    </a>
+                  ) : (
+                    <span className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-500">
+                      重跑包需后端在线
+                    </span>
+                  )}
                 </div>
 
                 <div>

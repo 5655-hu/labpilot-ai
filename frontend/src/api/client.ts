@@ -2,8 +2,19 @@
 
 import { isOffline, markOffline, OFFLINE_NOTES, offlineSnapshot } from './offline';
 
-const API_BASE =
-  (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8000';
+/**
+ * 后端地址的解析规则：
+ * - 显式配了 VITE_API_URL → 用它
+ * - 本地开发（localhost / 127.0.0.1）→ 默认连 localhost:8000
+ * - 线上且没配 → null，直接走内置快照，不白等网络超时
+ *
+ * 第三条是关键：评委点开 Qoder Sites 链接时不该盯着白屏数 5 秒。
+ */
+const EXPLICIT_API = import.meta.env.VITE_API_URL as string | undefined;
+const IS_LOCAL_HOST =
+  typeof window !== 'undefined' && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname);
+const API_BASE: string | null =
+  EXPLICIT_API ?? (IS_LOCAL_HOST ? 'http://localhost:8000' : null);
 
 /** 超过这个时间没回应就当后端不可用，切到内置快照，别让页面空等。 */
 const REQUEST_TIMEOUT_MS = 5000;
@@ -58,6 +69,16 @@ export interface Preview {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  // 线上且没配后端地址：直接快照，零等待。
+  if (API_BASE === null) {
+    const snapshot = await offlineSnapshot(path, '未配置后端地址');
+    if (snapshot !== null) {
+      markOffline('未配置后端地址');
+      return snapshot as T;
+    }
+    throw new Error('未配置后端地址，且该请求没有内置快照');
+  }
+
   const method = (init?.method ?? 'GET').toUpperCase();
   // 只读与计算类请求可以回退到快照；写操作绝不伪造成功。
   const canFallback = method === 'GET' || method === 'POST';
@@ -107,7 +128,7 @@ export function fetchPreview(id: number, limit = 100): Promise<Preview> {
 }
 
 export async function uploadDataset(file: File): Promise<Dataset> {
-  if (isOffline()) throw new Error(OFFLINE_NOTES.disabled.upload);
+  if (isOffline() || API_BASE === null) throw new Error(OFFLINE_NOTES.disabled.upload);
   const form = new FormData();
   form.append('file', file);
   const res = await fetch(`${API_BASE}/api/datasets/upload`, { method: 'POST', body: form });
@@ -617,5 +638,6 @@ export async function fetchDatasetArchives(
 
 /** Direct download URL for the one-click rerun package (JSON attachment). */
 export function archiveExportUrl(analysisId: number): string {
+  if (API_BASE === null) return '';
   return `${API_BASE}/api/analyses/${analysisId}/archive/export`;
 }
