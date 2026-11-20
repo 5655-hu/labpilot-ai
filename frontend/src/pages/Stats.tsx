@@ -37,7 +37,7 @@ export default function Stats() {
     fetchLatestStats(selectedId)
       .then((r) => {
         setResult(r.stats);
-        setResultMeta(`上次统计 ${r.created_at}（分析 #${r.analysis_id}）`);
+        setResultMeta(`上次统计${r.created_at ? ` ${r.created_at}` : ''}（分析 #${r.analysis_id}）`);
       })
       .catch(() => setResult(null))
       .finally(() => setLoadingLatest(false));

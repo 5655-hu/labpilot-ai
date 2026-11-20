@@ -131,7 +131,7 @@ export default function Report() {
     fetchLatestReport(selectedId)
       .then((r) => {
         setResp(r);
-        setMeta(`上次报告 ${r.created_at ?? ''}（分析 #${r.analysis_id}）`);
+        setMeta(`上次报告${r.created_at ? ` ${r.created_at}` : ''}（分析 #${r.analysis_id}）`);
       })
       .catch(() => setResp(null))
       .finally(() => setLoadingLatest(false));

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { fetchHealth } from '../api/client';
+import { OFFLINE_NOTES, useOfflineMode } from '../api/offline';
 
 const NAV = [
   { to: '/', label: 'Dashboard', end: true },
@@ -17,6 +18,7 @@ export default function Layout() {
   // if the backend is unreachable we fall back to the last known release label.
   const [version, setVersion] = useState<string | null>(null);
   const [wave, setWave] = useState<string | null>(null);
+  const offline = useOfflineMode();
   useEffect(() => {
     fetchHealth()
       .then((h) => {
@@ -63,9 +65,19 @@ export default function Layout() {
           都可检查、可解释、可复现。
         </div>
       </aside>
-      <main className="min-w-0 flex-1 px-8 py-8">
-        <Outlet />
-      </main>
+      <div className="flex min-w-0 flex-1 flex-col">
+        {offline && (
+          <div className="border-b border-amber-300 bg-amber-50 px-8 py-3 text-sm leading-relaxed text-amber-900">
+            <strong className="mr-2 rounded bg-amber-200 px-1.5 py-0.5 text-xs font-semibold">
+              {OFFLINE_NOTES.banner}
+            </strong>
+            {OFFLINE_NOTES.detail}
+          </div>
+        )}
+        <main className="min-w-0 flex-1 px-8 py-8">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

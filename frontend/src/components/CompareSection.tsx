@@ -43,7 +43,7 @@ export default function CompareSection({ dataset }: { dataset: Dataset }) {
     fetchLatestCompare(dataset.id)
       .then((r) => {
         setResp(r);
-        setMeta(`上次比较 ${r.created_at ?? ''}（分析 #${r.analysis_id}）`);
+        setMeta(`上次比较${r.created_at ? ` ${r.created_at}` : ''}（分析 #${r.analysis_id}）`);
         setGroupCol(r.compare.group_col);
         setValueCol(r.compare.value_col);
       })

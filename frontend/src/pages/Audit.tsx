@@ -43,7 +43,7 @@ export default function Audit() {
     fetchLatestAudit(selectedId)
       .then((r) => {
         setResult(r.audit);
-        setResultMeta(`上次审计 ${r.created_at}（分析 #${r.analysis_id}）`);
+        setResultMeta(`上次审计${r.created_at ? ` ${r.created_at}` : ''}（分析 #${r.analysis_id}）`);
       })
       .catch(() => setResult(null))
       .finally(() => setLoadingLatest(false));

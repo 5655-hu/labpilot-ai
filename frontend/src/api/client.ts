@@ -1,7 +1,19 @@
 /* LabPilot AI API client. Base URL comes from VITE_API_URL (see .env.example). */
 
+import { isOffline, markOffline, OFFLINE_NOTES, offlineSnapshot } from './offline';
+
 const API_BASE =
   (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8000';
+
+/** 超过这个时间没回应就当后端不可用，切到内置快照，别让页面空等。 */
+const REQUEST_TIMEOUT_MS = 5000;
+
+function describeError(err: unknown): string {
+  if (err instanceof DOMException && err.name === 'TimeoutError') return '请求超时';
+  if (err instanceof DOMException && err.name === 'AbortError') return '请求已取消';
+  if (err instanceof TypeError) return '后端不可达';
+  return err instanceof Error ? err.message : String(err);
+}
 
 export interface DatasetColumn {
   name: string;
@@ -46,12 +58,30 @@ export interface Preview {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, init);
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error((body as { detail?: string }).detail ?? `请求失败 (${res.status})`);
+  const method = (init?.method ?? 'GET').toUpperCase();
+  // 只读与计算类请求可以回退到快照；写操作绝不伪造成功。
+  const canFallback = method === 'GET' || method === 'POST';
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      ...init,
+      signal: init?.signal ?? AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error((body as { detail?: string }).detail ?? `请求失败 (${res.status})`);
+    }
+    return res.json() as Promise<T>;
+  } catch (err) {
+    const reason = describeError(err);
+    if (canFallback) {
+      const snapshot = await offlineSnapshot(path, reason);
+      if (snapshot !== null) {
+        markOffline(reason);
+        return snapshot as T;
+      }
+    }
+    throw err instanceof Error ? err : new Error(reason);
   }
-  return res.json() as Promise<T>;
 }
 
 export function fetchHealth(): Promise<{ status: string; version: string; wave?: string; db: string; datasets: number }> {
@@ -77,6 +107,7 @@ export function fetchPreview(id: number, limit = 100): Promise<Preview> {
 }
 
 export async function uploadDataset(file: File): Promise<Dataset> {
+  if (isOffline()) throw new Error(OFFLINE_NOTES.disabled.upload);
   const form = new FormData();
   form.append('file', file);
   const res = await fetch(`${API_BASE}/api/datasets/upload`, { method: 'POST', body: form });
@@ -88,6 +119,7 @@ export async function uploadDataset(file: File): Promise<Dataset> {
 }
 
 export async function deleteDataset(id: number): Promise<void> {
+  if (isOffline()) throw new Error(OFFLINE_NOTES.disabled.delete);
   await request(`/api/datasets/${id}`, { method: 'DELETE' });
 }
 
@@ -514,6 +546,7 @@ export interface RerunResult {
 }
 
 export function rerunAnalysis(id: number): Promise<RerunResult> {
+  if (isOffline()) return Promise.reject(new Error(OFFLINE_NOTES.disabled.rerun));
   return request(`/api/analyses/${id}/rerun`, { method: 'POST' });
 }
 

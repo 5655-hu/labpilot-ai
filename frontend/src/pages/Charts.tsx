@@ -82,9 +82,12 @@ export default function Charts() {
       .then((r) => {
         setColumns(r.columns);
         const nums = numericOptions(r.columns);
-        setHistColumn(nums[0]?.name ?? '');
+        // 默认不要拿 sample_id / id 这类行号列当坐标轴——画出来只是条噪声线。
+        const usable = nums.filter((c) => !/^(sample_id|id|index|no)$/i.test(c.name));
+        const pick = usable.length >= 2 ? usable : nums;
+        setHistColumn(pick[0]?.name ?? '');
         setBoxCols(nums.map((c) => c.name));
-        setXy({ x: nums[0]?.name ?? '', y: nums[1]?.name ?? nums[0]?.name ?? '' });
+        setXy({ x: pick[0]?.name ?? '', y: pick[1]?.name ?? pick[0]?.name ?? '' });
       })
       .catch((e) => setError(e instanceof Error ? e.message : '加载字段失败'));
   }, [selectedId]);
