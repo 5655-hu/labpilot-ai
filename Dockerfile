@@ -9,7 +9,9 @@ WORKDIR /build
 
 # 依赖层单独缓存：改代码不会重装依赖
 COPY frontend/package.json frontend/package-lock.json ./
-RUN npm ci
+# 国内构建加速：--build-arg NPM_REGISTRY=https://registry.npmmirror.com
+ARG NPM_REGISTRY=https://registry.npmjs.org
+RUN npm config set registry "$NPM_REGISTRY" && npm ci
 
 COPY frontend/ ./
 # 同源部署：前端请求直接打到 /api，不写死后端域名
