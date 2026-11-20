@@ -1,0 +1,15 @@
+# LabPilot AI backend — Wave 1
+# Install: python -m venv .venv && .venv/bin/pip install -r requirements.txt
+fastapi==0.165.0
+uvicorn[standard]==0.54.0
+pandas==2.1.4
+numpy==1.26.4
+scipy==1.11.4
+scikit-learn==1.9.1
+openpyxl==3.1.2
+python-multipart==0.0.20
+pytest==9.2.0
+httpx==0.28.1
+# Wave 4: Turso / libSQL client (only used when DATABASE_URL is libsql://).
+# Installed and verified against a local sqld 0.24.32 (2026-11-20).
+libsql-experimental==0.0.55

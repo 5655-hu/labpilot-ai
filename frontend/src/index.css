@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy-950: #060d1a;
+  --color-navy-900: #0a1628;
+  --color-navy-800: #10233f;
+  --color-navy-700: #16304f;
+  --color-accent-500: #2563eb;
+  --color-accent-600: #1d4ed8;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background-color: #f1f5f9;
+  color: #0f172a;
+}

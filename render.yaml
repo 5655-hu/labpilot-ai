@@ -1,0 +1,22 @@
+# LabPilot AI 后端部署配置（Render 免费层）
+# 用法：用户在 Render 控制台 New → Blueprint，选 GitHub 仓库 5655-hu/labpilot-ai，
+# Render 会自动读取本文件。sync: false 的变量必须在 Render 控制台手动填写，
+# 不要把真实值写进仓库。
+services:
+  - type: web
+    name: labpilot-ai-backend
+    env: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false

@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+backend/data/labpilot.db
+backend/data/uploads/
+# keep golden demo data (regenerable, but part of the repo)
+!backend/data/golden/
+# Node
+node_modules/
+frontend/dist/
+# Env (examples stay)
+.env
+frontend/.env
+
+# dev databases (local only, never commit)
+backend/data/*.db
+backend/data/*.db*
