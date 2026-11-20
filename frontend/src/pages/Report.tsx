@@ -273,10 +273,10 @@ export default function Report() {
               <section className="rounded-xl border border-slate-200 bg-white p-5">
                 <h2 className="font-semibold text-slate-900">数据集概览</h2>
                 <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
-                  <div><dt className="text-slate-500">名称</dt><dd className="font-medium text-slate-900">{report.dataset.name}（{report.dataset.filename}）</dd></div>
-                  <div><dt className="text-slate-500">规模</dt><dd className="font-medium text-slate-900">{report.dataset.rows} 行 × {report.dataset.cols} 列</dd></div>
-                  <div><dt className="text-slate-500">文件哈希</dt><dd className="font-mono text-xs text-slate-700">{report.dataset.file_hash}</dd></div>
-                  <div><dt className="text-slate-500">生成时间</dt><dd className="font-medium text-slate-900">{report.generated_at}</dd></div>
+                  <div className="min-w-0"><dt className="text-slate-500">名称</dt><dd className="font-medium text-slate-900 break-words">{report.dataset.name}（{report.dataset.filename}）</dd></div>
+                  <div className="min-w-0"><dt className="text-slate-500">规模</dt><dd className="font-medium text-slate-900">{report.dataset.rows} 行 × {report.dataset.cols} 列</dd></div>
+                  <div className="min-w-0"><dt className="text-slate-500">文件哈希</dt><dd className="font-mono text-xs text-slate-700 break-all">{report.dataset.file_hash}</dd></div>
+                  <div className="min-w-0"><dt className="text-slate-500">生成时间</dt><dd className="font-medium text-slate-900 break-words">{report.generated_at}</dd></div>
                 </dl>
                 <p className="mt-2 text-sm text-slate-500">
                   列：{report.dataset.columns.map((c) => `${c.name} (${c.dtype})`).join('、')}

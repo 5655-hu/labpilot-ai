@@ -80,8 +80,8 @@ export default function Archive() {
         />
       )}
       {!loading && !error && analyses.status === 'ready' && analysesTotal > 0 && (
-        <div className="grid gap-5 lg:grid-cols-2">
-          <section className="rounded-xl border border-slate-200 bg-white p-5" data-testid="archive-list">
+        <div className="grid min-w-0 gap-5 lg:grid-cols-2">
+          <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-5" data-testid="archive-list">
             <h2 className="font-semibold text-slate-900">分析记录（共 {analysesTotal} 条）</h2>
             <p className="mt-1 text-sm text-slate-500">
               点一条查看完整档案；重跑用原参数重新执行同一分析并与原结果逐项比对，四类分析均可重跑。
@@ -129,7 +129,7 @@ export default function Archive() {
             </div>
           </section>
 
-          <section className="rounded-xl border border-slate-200 bg-white p-5" data-testid="archive-detail">
+          <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-5" data-testid="archive-detail">
             {!selected && <p className="text-sm text-slate-500">点左侧任意一条分析，查看它的完整复现档案。</p>}
             {selected && detailLoading && <LoadingState text="正在加载档案详情…" />}
             {selected && detailError && <ErrorState message={detailError} onRetry={() => openArchive(selected.id)} />}

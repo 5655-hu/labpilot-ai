@@ -1,22 +1,36 @@
 # LabPilot AI 后端部署配置（Render 免费层）
-# 用法：用户在 Render 控制台 New → Blueprint，选 GitHub 仓库 5655-hu/labpilot-ai，
-# Render 会自动读取本文件。sync: false 的变量必须在 Render 控制台手动填写，
-# 不要把真实值写进仓库。
+#
+# 用法：Render 控制台 → New → Blueprint → 选择 GitHub 仓库 5655-hu/labpilot-ai
+#      Render 会自动读取本文件并创建服务。
+#
+# 重要说明（免费层限制，不是配置错误）：
+#   1. 免费实例 15 分钟无请求会休眠，下次访问冷启动约 30-60 秒，属正常现象。
+#   2. 免费层没有持久磁盘，容器重启后文件系统重置。
+#      本项目启动时会自动 seed 3 份黄金演示数据（见 app/main.py 的 lifespan），
+#      所以评委演示不受影响；但用户自己上传的数据集会在重启后丢失。
+#   3. 若要持久化，二选一：
+#      a) 接 Turso 云端 SQLite：在控制台填 DATABASE_URL=libsql://... 和 TURSO_AUTH_TOKEN
+#         （步骤见 backend/docs/turso_setup.md）
+#      b) 升级 Render 付费层并挂载 Disk，DATABASE_URL=sqlite:///data/labpilot.db
+#
+# 不要在仓库里写任何真实密钥：sync: false 的变量在 Render 控制台手动填写。
+
 services:
   - type: web
     name: labpilot-ai-backend
-    env: python
+    runtime: python
     plan: free
+    # 新加坡节点离国内更近；若创建时报 region 不支持，删掉这一行用默认（Oregon）
+    region: singapore
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
+      # 必须锁 3.12：pandas 2.1.4 不支持 3.13
       - key: PYTHON_VERSION
-        value: 3.12.0
-      - key: DATABASE_URL
-        sync: false
-      - key: TURSO_AUTH_TOKEN
-        sync: false
+        value: 3.12.8
+      # 前端发布到 Qoder Sites 后拿到域名，回来把这里改成该域名（逗号可填多个）
+      # 首次创建时先填占位值 https://placeholder.qoder.zone，拿到真实域名后再改
       - key: CORS_ORIGINS
         sync: false
