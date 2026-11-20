@@ -1,36 +1,34 @@
-# LabPilot AI 后端部署配置（Render 免费层）
+# LabPilot AI 部署配置（Render 单服务镜像）
 #
-# 用法：Render 控制台 → New → Blueprint → 选择 GitHub 仓库 5655-hu/labpilot-ai
-#      Render 会自动读取本文件并创建服务。
+# 用法：Render 控制台 → New → Blueprint → 选择仓库 5655-hu/labpilot-ai
+#      Render 读取本文件，用仓库根的 Dockerfile 构建一个镜像：
+#      前端构建产物打进镜像，同一个 uvicorn 进程同时提供页面与 /api。
+#      不需要再单独发布前端，也不需要配 CORS。
 #
-# 重要说明（免费层限制，不是配置错误）：
-#   1. 免费实例 15 分钟无请求会休眠，下次访问冷启动约 30-60 秒，属正常现象。
-#   2. 免费层没有持久磁盘，容器重启后文件系统重置。
-#      本项目启动时会自动 seed 3 份黄金演示数据（见 app/main.py 的 lifespan），
+# 免费层限制（是平台规则，不是配置错误）：
+#   1. 15 分钟无请求会休眠，下次访问冷启动 30~60 秒。
+#   2. 没有持久磁盘，容器重启后文件系统重置。
+#      服务启动时会自动 seed 3 份黄金演示数据（app/main.py 的 lifespan），
 #      所以评委演示不受影响；但用户自己上传的数据集会在重启后丢失。
-#   3. 若要持久化，二选一：
-#      a) 接 Turso 云端 SQLite：在控制台填 DATABASE_URL=libsql://... 和 TURSO_AUTH_TOKEN
-#         （步骤见 backend/docs/turso_setup.md）
-#      b) 升级 Render 付费层并挂载 Disk，DATABASE_URL=sqlite:///data/labpilot.db
+#   3. 要真正持久，二选一：
+#      a) 填 DATABASE_URL=libsql://... 与 TURSO_AUTH_TOKEN（Turso 云 SQLite，
+#         步骤见 backend/docs/turso_setup.md）
+#      b) 升级付费层并挂 Disk，DATABASE_URL=sqlite:///data/labpilot.db
 #
-# 不要在仓库里写任何真实密钥：sync: false 的变量在 Render 控制台手动填写。
+# 不要在仓库里写任何真实密钥：sync: false 的变量到 Render 控制台手填。
 
 services:
   - type: web
-    name: labpilot-ai-backend
-    runtime: python
+    name: labpilot-ai
+    runtime: docker
     plan: free
-    # 新加坡节点离国内更近；若创建时报 region 不支持，删掉这一行用默认（Oregon）
+    # 新加坡离国内近；若提示该区不支持免费层，换成 oregon
     region: singapore
-    rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     healthCheckPath: /health
     envVars:
-      # 必须锁 3.12：pandas 2.1.4 不支持 3.13
-      - key: PYTHON_VERSION
-        value: 3.12.8
-      # 前端发布到 Qoder Sites 后拿到域名，回来把这里改成该域名（逗号可填多个）
-      # 首次创建时先填占位值 https://placeholder.qoder.zone，拿到真实域名后再改
-      - key: CORS_ORIGINS
-        sync: false
+      # 镜像内已设默认值，这里显式声明便于排查
+      - key: FRONTEND_DIR
+        value: /app/static
+      # 端口由 Render 注入 PORT 环境变量，Dockerfile 的 CMD 会读取，勿写死
