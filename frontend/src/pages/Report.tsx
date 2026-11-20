@@ -6,7 +6,7 @@ import {
   type ReportResponse,
   type ReportResult,
 } from '../api/client';
-import { useLibrary } from '../api/hooks';
+import { readyDatasets, useLibrary } from '../api/hooks';
 import RerunButton from '../components/RerunButton';
 import { EmptyState, ErrorState, LoadingState, PageHeader } from '../components/StateViews';
 
@@ -16,7 +16,7 @@ function fmt(v: number | null | undefined, digits = 4): string {
 }
 
 /** 用同一份报告 JSON 在客户端生成 Markdown：数字全部取自 JSON 原值，AI 段落原样嵌入。 */
-export function buildReportMarkdown(r: ReportResult, analysisId: number, createdAt?: string): string {
+function buildReportMarkdown(r: ReportResult, analysisId: number, createdAt?: string): string {
   const L: string[] = [];
   L.push(`# AI 科研报告：${r.dataset.name}`);
   L.push('');
@@ -31,7 +31,9 @@ export function buildReportMarkdown(r: ReportResult, analysisId: number, created
     L.push(`- Token 用量：prompt ${r.tokens.promptTokenCount} / 生成 ${r.tokens.candidatesTokenCount} / 合计 ${r.tokens.totalTokenCount}`);
   }
   if (r.send_manifest) {
-    L.push(`- AI 耗时：${r.send_manifest.elapsed_seconds} 秒；发送原始数据行数：${r.send_manifest.raw_rows_sent}（原始数据默认不发送）`);
+    const elapsed = r.send_manifest.elapsed_seconds;
+    const elapsedText = elapsed == null ? '不适用（未调用模型）' : `${elapsed} 秒`;
+    L.push(`- AI 耗时：${elapsedText}；发送原始数据行数：${r.send_manifest.raw_rows_sent}（原始数据默认不发送）`);
   }
   L.push('');
   L.push('## 数据质量审计');
@@ -111,7 +113,7 @@ export default function Report() {
   const [loadingLatest, setLoadingLatest] = useState(false);
   const [error, setError] = useState('');
 
-  const list = datasets.status === 'ready' ? datasets.data : [];
+  const list = readyDatasets(datasets);
 
   useEffect(() => {
     if (selectedId === null && list.length > 0) {
@@ -256,7 +258,10 @@ export default function Report() {
                 )}
                 {report.send_manifest && (
                   <span className="text-sm text-slate-500">
-                    模型 {report.send_manifest.model} · 耗时 {report.send_manifest.elapsed_seconds} 秒 · 原始数据行发送 {report.send_manifest.raw_rows_sent} 行
+                    模型 {report.send_manifest.model}
+                    {report.send_manifest.elapsed_seconds != null &&
+                      ` · 耗时 ${report.send_manifest.elapsed_seconds} 秒`}
+                    {' · '}原始数据行发送 {report.send_manifest.raw_rows_sent} 行
                   </span>
                 )}
                 <span className="ml-auto">

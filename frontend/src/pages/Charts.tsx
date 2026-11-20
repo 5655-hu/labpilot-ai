@@ -16,7 +16,7 @@ import {
   type RegressionChart,
   type ScatterChart,
 } from '../api/client';
-import { useLibrary } from '../api/hooks';
+import { readyDatasets, useLibrary } from '../api/hooks';
 import Plot from '../components/Plot';
 import { EmptyState, ErrorState, LoadingState, PageHeader } from '../components/StateViews';
 
@@ -60,7 +60,7 @@ export default function Charts() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const list = datasets.status === 'ready' ? datasets.data : [];
+  const list = readyDatasets(datasets);
   const selected = list.find((d) => d.id === selectedId) ?? null;
   const numeric = useMemo(() => numericOptions(columns), [columns]);
 

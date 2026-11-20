@@ -21,7 +21,8 @@ def get_conn():
 
 @router.get("")
 def list_datasets(conn: sqlite3.Connection = Depends(get_conn)):
-    return {"datasets": store.list_datasets(conn), "total": len(store.list_datasets(conn))}
+    datasets = store.list_datasets(conn)
+    return {"datasets": datasets, "total": len(datasets)}
 
 
 @router.post("/upload")

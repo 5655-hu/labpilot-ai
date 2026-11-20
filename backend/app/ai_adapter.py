@@ -21,6 +21,7 @@ assembly) falls back to the rule-based text.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import time
@@ -28,9 +29,15 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
-GEMINI_HELPER = (
+GEMINI_HELPER_DEFAULT = (
     Path.home() / "workspace" / "custom-connectors" / "custom.gemini" / "bin" / "gemini.py"
 )
+# Deployment override: the helper lives outside this repository, so any
+# machine / container can point at its own copy instead of the author's home.
+# Empty / unset keeps the original default path.
+GEMINI_HELPER = Path(
+    os.environ.get("GEMINI_HELPER_PATH", "").strip() or GEMINI_HELPER_DEFAULT
+).expanduser()
 GEMINI_MODEL = "gemini-3.5-flash-lite"
 GEMINI_MAX_TOKENS = 800
 GEMINI_TIMEOUT_SECONDS = 60

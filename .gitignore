@@ -17,3 +17,6 @@ frontend/.env
 # dev databases (local only, never commit)
 backend/data/*.db
 backend/data/*.db*
+
+# local run logs (uvicorn / vite / pip output)
+*.log

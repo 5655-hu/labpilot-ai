@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchLatestStats, runStats, type StatsResult } from '../api/client';
-import { useLibrary } from '../api/hooks';
+import { readyDatasets, useLibrary } from '../api/hooks';
 import CompareSection from '../components/CompareSection';
 import { EmptyState, ErrorState, LoadingState, PageHeader } from '../components/StateViews';
 
@@ -19,7 +19,7 @@ export default function Stats() {
   const [loadingLatest, setLoadingLatest] = useState(false);
   const [error, setError] = useState('');
 
-  const list = datasets.status === 'ready' ? datasets.data : [];
+  const list = readyDatasets(datasets);
 
   useEffect(() => {
     if (selectedId === null && list.length > 0) {

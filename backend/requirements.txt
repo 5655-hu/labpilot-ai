@@ -11,5 +11,6 @@ python-multipart==0.0.20
 pytest==9.2.0
 httpx==0.28.1
 # Wave 4: Turso / libSQL client (only used when DATABASE_URL is libsql://).
-# Installed and verified against a local sqld 0.24.32 (2026-11-20).
-libsql-experimental==0.0.55
+# No Windows wheel is published (the sdist needs Rust + MSVC link.exe), so it
+# is skipped on Windows; the default sqlite:// backend never imports it.
+libsql-experimental==0.0.55; sys_platform != "win32"

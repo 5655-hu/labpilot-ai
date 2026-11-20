@@ -1,0 +1,4 @@
+# 黄金演示 CSV 固定使用 LF 换行。
+# Windows 下 core.autocrlf=true 会把仓库内的 LF 转成 CRLF，改变文件字节，
+# 导致 tests/test_golden.py 的 SHA-256 清单校验失败；这里强制仓库内与检出均为 LF。
+*.csv text eol=lf

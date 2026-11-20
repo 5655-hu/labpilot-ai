@@ -119,7 +119,7 @@ def assert_evidence_complete(conclusions):
 # 1. Gemini provider (mocked subprocess)
 # ---------------------------------------------------------------------------
 
-def test_gemini_provider_mocked_returns_tokens_and_elapsed(env):
+def test_gemini_provider_mocked_returns_tokens_and_elapsed(env, gemini_helper):
     from app.ai_adapter import GeminiProvider, StatsSummary, summarize
 
     summary = StatsSummary(dataset_name="t", rows=10, cols=2, file_hash="x" * 64)
@@ -143,7 +143,7 @@ def test_gemini_provider_mocked_returns_tokens_and_elapsed(env):
 # 2. Report endpoints
 # ---------------------------------------------------------------------------
 
-def test_report_ai_path(env):
+def test_report_ai_path(env, gemini_helper):
     client = env["client"]
     corr_id = env["datasets"]["corr"]["id"]
     with patch("app.ai_adapter.subprocess.run", side_effect=_fake_run_ok):
@@ -218,7 +218,7 @@ def test_report_404s(env):
 #    deterministic sections of the rendered report.
 # ---------------------------------------------------------------------------
 
-def test_tampered_ai_numbers_do_not_change_rendered_numbers(env):
+def test_tampered_ai_numbers_do_not_change_rendered_numbers(env, gemini_helper):
     from app.report import render_markdown
 
     client = env["client"]
@@ -309,7 +309,7 @@ def test_stats_rerun_consistent(env):
     assert rerun.json()["differences"] == []
 
 
-def test_report_rerun_reuses_ai_text_without_new_model_call(env):
+def test_report_rerun_reuses_ai_text_without_new_model_call(env, gemini_helper):
     client = env["client"]
     corr_id = env["datasets"]["corr"]["id"]
     with patch("app.ai_adapter.subprocess.run", side_effect=_fake_run_ok) as m:

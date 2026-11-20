@@ -51,6 +51,8 @@ labpilot-ai/
 
 ## 本地运行
 
+环境要求：**Python ≥ 3.11**（`fastapi 0.165` 的硬约束；3.10 会在安装阶段直接失败）、Node ≥ 20。
+
 ```bash
 # 后端（开发模式）
 cd backend
@@ -64,6 +66,24 @@ cd frontend
 npm install
 npm run dev   # http://localhost:5173
 ```
+
+### Windows（PowerShell）
+
+```powershell
+# 后端
+cd backend
+py -3.12 -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+.venv\Scripts\uvicorn.exe app.main:app --port 8000
+
+# 前端（另开一个窗口）
+cd frontend
+npm install
+npm run dev
+```
+
+Windows 下 `libsql-experimental` 没有预编译包（源码构建需要 Rust + MSVC `link.exe`），
+`requirements.txt` 已用 `sys_platform != "win32"` 跳过它；本地 `sqlite://` 后端不会 import 该包。
 
 前端 API 地址由 `frontend/.env` 中的 `VITE_API_URL` 配置，默认 `http://localhost:8000`。
 
@@ -100,9 +120,25 @@ python3 -m http.server 4173 --directory dist
 ## 测试
 
 ```bash
-cd backend && .venv/bin/python -m pytest tests/ -q   # 93 passed
+cd backend && .venv/bin/python -m pytest tests/ -q    # Linux/macOS：92 passed, 1 skipped
+cd backend && .venv\Scripts\python.exe -m pytest tests/ -q    # Windows
 cd frontend && npm run build                          # 通过
 ```
+
+测试隔离：数据库走临时文件，上传文件写入会话临时目录（`tests/conftest.py`），
+跑完不在 `backend/data/uploads/` 留任何残留。
+`GeminiProvider.available()` 依赖仓库外的私有连接器 `custom.gemini`，测试用
+`gemini_helper` fixture 造一个占位文件并 mock `subprocess`，因此不联网、不调真实模型。
+
+### 接口冒烟（对运行中的后端）
+
+```bash
+cd backend && .venv/Scripts/python.exe scripts/smoke_api.py    # Windows
+cd backend && .venv/bin/python scripts/smoke_api.py            # Linux/macOS
+```
+
+覆盖 36 项检查（数据集、审计、统计、六类图表、分组比较、报告、重跑、档案导出、
+上传/删除、边界 404/400/422），退出码 0 表示全部通过。可用 `LABPILOT_API` 指向其他地址。
 
 证据包：`backend/docs/wave1_evidence.md` ~ `backend/docs/wave5_evidence.md`
 （API 实调记录、pytest 与 build 结果、真实截图、未解决问题清单）。

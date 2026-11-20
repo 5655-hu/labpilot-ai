@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 import sqlite3
 from pathlib import Path
@@ -114,7 +115,10 @@ def store_upload(conn: sqlite3.Connection, *, filename: str, content: bytes) -> 
         stored_path=tmp,  # hash is computed before the rename below
     )
     final = UPLOADS_DIR / f"{rec['id']}.csv"
-    tmp.rename(final)
+    # os.replace overwrites an existing target atomically on POSIX *and* on
+    # Windows; Path.rename() maps to os.rename(), which raises FileExistsError
+    # on Windows when the target already exists (e.g. a reused row id).
+    os.replace(tmp, final)
     conn.execute("UPDATE datasets SET file_path = ? WHERE id = ?", (str(final), rec["id"]))
     conn.commit()
     return get_dataset(conn, rec["id"])

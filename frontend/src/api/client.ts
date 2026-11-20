@@ -405,7 +405,7 @@ export interface ReportResult {
     model: string;
     sent_fields: string[];
     raw_rows_sent: number;
-    elapsed_seconds: number;
+    elapsed_seconds: number | null;
     tokens: { promptTokenCount: number; candidatesTokenCount: number; totalTokenCount: number } | null;
   } | null;
   tokens: { promptTokenCount: number; candidatesTokenCount: number; totalTokenCount: number } | null;

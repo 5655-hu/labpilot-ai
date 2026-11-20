@@ -63,7 +63,7 @@ def test_corr_strong_linear_relation():
     assert abs(info["pearson_dose_response"] - 0.98506) < 1e-4
 
 
-def test_ai_adapter_privacy_and_fallback():
+def test_ai_adapter_privacy_and_fallback(gemini_helper):
     from app.ai_adapter import (
         ColumnSummary,
         DeepSeekProvider,

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchLatestAudit, runAudit, type AuditRequest, type AuditResult } from '../api/client';
-import { useLibrary } from '../api/hooks';
+import { readyDatasets, useLibrary } from '../api/hooks';
 import { EmptyState, ErrorState, LoadingState, PageHeader } from '../components/StateViews';
 
 const PROFILES = [
@@ -25,7 +25,7 @@ export default function Audit() {
   const [loadingLatest, setLoadingLatest] = useState(false);
   const [error, setError] = useState('');
 
-  const list = datasets.status === 'ready' ? datasets.data : [];
+  const list = readyDatasets(datasets);
 
   useEffect(() => {
     if (selectedId === null && list.length > 0) {
