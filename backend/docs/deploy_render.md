@@ -142,6 +142,82 @@ https://labpilot-xxxx.qoder.zone
 
 ---
 
+## 附：用 Docker 镜像部署（备选，也用于国内云）
+
+仓库里已带 `backend/Dockerfile` 和 `backend/.dockerignore`，镜像可直接构建。
+
+### 构建与运行
+
+```powershell
+cd C:\Users\Lenovo\Desktop\qoder\labpilot-ai
+
+# 默认 PyPI
+docker build -t labpilot-ai-backend:0.6.0 .\backend
+
+# 国内加速
+docker build --build-arg PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple `
+             -t labpilot-ai-backend:0.6.0 .\backend
+
+# 运行（临时数据）
+docker run --rm -p 8000:8000 labpilot-ai-backend:0.6.0
+
+# 运行（数据持久化）
+docker run -d --name labpilot -p 8000:8000 -v labpilot-data:/app/data labpilot-ai-backend:0.6.0
+```
+
+验证：`curl http://127.0.0.1:8000/health`
+
+### 镜像里的关键设定
+
+| 项 | 值 | 原因 |
+|---|---|---|
+| 基础镜像 | `python:3.12-slim`（Debian bookworm，glibc 2.36） | pandas 2.1.4 不支持 3.13 |
+| 用户 | 非 root（uid 1001） | 降低容器逃逸风险 |
+| 依赖层 | 单独 `COPY requirements.txt` 后安装 | 改代码不触发重装 |
+| 数据目录 | `/app/data` 可写 | SQLite 需要写权限；重启自动 reseed |
+| 端口 | 读 `$PORT`，默认 8000 | 适配 Render / 阿里云 |
+
+### ⚠ glibc 硬要求：≥ 2.28
+
+实测依赖 wheel 标签：
+
+| 包 | wheel 标签 | 最低 glibc |
+|---|---|---|
+| pandas 2.1.4 / scipy 1.11.4 / numpy 1.26.4 | manylinux_2_17（=2014） | 2.17 |
+| **scikit-learn 1.9.1** | **manylinux_2_27 / 2_28** | **2.28** |
+| libsql-experimental 0.0.55 | manylinux2014 | 2.17 |
+
+所以宿主系统的 glibc 必须 ≥ 2.28：
+
+- ✅ Ubuntu 20.04+ / Debian 11+ / AlmaLinux 8+ / 阿里云 Ubuntu 镜像
+- ❌ **CentOS 7（glibc 2.17）装不上**，会报 `No matching distribution found for scikit-learn==1.9.1`
+- ❌ 阿里云 Linux 2（CentOS 7 内核）同样不行，要选 Linux 3（Alibaba Cloud Linux 3 / glibc 2.34）
+
+### 在 Render 用 Docker 运行时
+
+把 `render.yaml` 里的服务段改成：
+
+```yaml
+services:
+  - type: web
+    name: labpilot-ai-backend
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      - key: CORS_ORIGINS
+        sync: false
+```
+
+> 本机当前**未安装 Docker**，所以上述镜像没有在本机实构验证过。
+> 但依赖 wheel 已全量核验（42 个包全部命中 Linux 预编译包），构建阶段不会触发源码编译。
+> 要在本地构建，先装 Docker Desktop；直接让 Render 构建则不需要本地 Docker。
+
+---
+
 ## 成本与限制（免费层）
 
 | 项 | 限制 |

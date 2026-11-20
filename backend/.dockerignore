@@ -1,0 +1,20 @@
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.env
+
+# 运行时数据：镜像里不打包，容器启动时自动生成并 seed
+data/labpilot.db
+data/labpilot.db-*
+data/labpilot.db-journal
+data/libsql-replica.db
+data/libsql-replica.db-*
+data/uploads/*
+
+# 比赛材料不必进镜像
+docs/screenshots/
+docs/*.md
+*.log
