@@ -1,0 +1,13 @@
+# 全栈镜像构建上下文排除项
+frontend/node_modules
+frontend/dist
+backend/.venv
+backend/__pycache__
+backend/data/labpilot.db*
+backend/data/uploads/*
+backend/docs/screenshots
+backend/uv.log
+backend/uv.err.log
+**/*.log
+.git
+labpilot-ai-original

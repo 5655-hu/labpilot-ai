@@ -3,18 +3,19 @@
 import { isOffline, markOffline, OFFLINE_NOTES, offlineSnapshot } from './offline';
 
 /**
- * 后端地址的解析规则：
- * - 显式配了 VITE_API_URL → 用它
- * - 本地开发（localhost / 127.0.0.1）→ 默认连 localhost:8000
- * - 线上且没配 → null，直接走内置快照，不白等网络超时
- *
- * 第三条是关键：评委点开 Qoder Sites 链接时不该盯着白屏数 5 秒。
+ * 后端地址的解析规则（按优先级）：
+ * 1. VITE_API_SAME_ORIGIN=1 → 同源部署，请求直接打到 /api（前后端一个服务）
+ * 2. 显式配了 VITE_API_URL → 用它
+ * 3. 本地开发（localhost / 127.0.0.1）→ 默认连 localhost:8000
+ * 4. 以上都没有 → null，直接走内置快照，不白等网络超时
  */
+const SAME_ORIGIN = import.meta.env.VITE_API_SAME_ORIGIN === '1';
 const EXPLICIT_API = import.meta.env.VITE_API_URL as string | undefined;
 const IS_LOCAL_HOST =
   typeof window !== 'undefined' && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname);
-const API_BASE: string | null =
-  EXPLICIT_API ?? (IS_LOCAL_HOST ? 'http://localhost:8000' : null);
+const API_BASE: string | null = SAME_ORIGIN
+  ? ''
+  : (EXPLICIT_API ?? (IS_LOCAL_HOST ? 'http://localhost:8000' : null));
 
 /** 超过这个时间没回应就当后端不可用，切到内置快照，别让页面空等。 */
 const REQUEST_TIMEOUT_MS = 5000;

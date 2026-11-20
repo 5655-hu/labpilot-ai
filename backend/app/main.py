@@ -62,3 +62,17 @@ def health():
     finally:
         conn.close()
     return {"status": "ok", "version": VERSION, "wave": WAVE, "db": backend_kind(), "datasets": n}
+
+
+# ---- 可选：同源托管前端 ----
+# 设了 FRONTEND_DIR（或用默认 backend/static）就挂载前端构建产物，
+# 一个进程同时服务页面和 /api，部署只需一个服务、无跨域。
+_FRONTEND_DIR = os.environ.get(
+    "FRONTEND_DIR", os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+)
+if os.path.isdir(_FRONTEND_DIR):
+    from fastapi.staticfiles import StaticFiles  # noqa: E402
+
+    # 必须最后挂载：否则 "/" 会把 /api 路由吃掉
+    app.mount("/", StaticFiles(directory=_FRONTEND_DIR, html=True), name="frontend")
+
