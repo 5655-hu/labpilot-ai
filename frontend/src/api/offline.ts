@@ -180,9 +180,10 @@ export async function offlineSnapshot(path: string, reason: string): Promise<unk
 
 /** 离线模式下的能力边界说明，给 UI 用。 */
 export const OFFLINE_NOTES = {
-  banner: '内置演示数据',
+  banner: '演示模式 · 离线快照',
   detail:
-    '后端服务当前未连接，页面展示的是真实引擎在黄金演示数据上的运行结果快照。可浏览全部审计/统计/图表/报告；上传自定义文件与重新计算需要后端在线。',
+    '当前展示的是真实计算引擎在 3 份黄金演示数据上的运行结果快照，审计 / 统计 / 图表 / 报告都能完整浏览。要上传自己的数据并实时计算，请用真后端版本：',
+  backendUrl: 'http://8.163.38.73:8000',
   disabled: {
     upload: '离线演示模式下不能上传新文件。',
     rerun: '离线演示模式下不能重跑分析。',

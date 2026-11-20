@@ -72,6 +72,14 @@ export default function Layout() {
               {OFFLINE_NOTES.banner}
             </strong>
             {OFFLINE_NOTES.detail}
+            <a
+              href={OFFLINE_NOTES.backendUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="ml-1 font-semibold underline decoration-amber-600 underline-offset-2"
+            >
+              {OFFLINE_NOTES.backendUrl}
+            </a>
           </div>
         )}
         <main className="min-w-0 flex-1 px-8 py-8">

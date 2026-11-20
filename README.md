@@ -1,15 +1,17 @@
 # LabPilot AI — 科研数据智能审计与复现助手
 
 > **在线体验（真后端）**：http://8.163.38.73:8000 —— 上传自己的 CSV、跑审计 / 统计 / 图表 / 报告，全部实时计算，不是演示快照。
+>
+> **作品主页（Qoder Sites，公开）**：https://labpilot-ai-7rqxdfoi89b.qoder.zone —— 免登录可看完整演示数据快照，页内可一键跳到真后端版本。
 
 Qoder 高校创造力大赛 StudyHack 赛道，个人参赛，目标冲击一等奖。
 硬截止：2026-11-30 18:00。完整方案见 `../your_files/labpilot-ai-xiang-mu-fang-an/labpilot-ai-xiang-mu-fang-an.pdf`（v2，18 页）。
 
 > 让每一份实验数据都可检查、可解释、可复现。
 
-**当前状态（Wave 5，v0.6.0，2026-11-20）：五波开发全部完成并通过实际运行验证。
-本地生产构建联调通过；公网部署（Qoder Sites + 后端公网服务）与天池发帖待用户操作，
-步骤见 `backend/docs/deploy_checklist.md`，清单见 `backend/docs/competition_checklist.md`。**
+**当前状态（Wave 5，v0.6.0，2026-11-21）：五波开发全部完成并通过实际运行验证。
+公网部署已完成——Qoder Sites 公开站点 + 阿里云轻量真后端双通道，均已匿名实测通过；
+比赛提交材料见 `backend/docs/tianchi_post.md`。**
 
 ## 原则（不可动摇）
 

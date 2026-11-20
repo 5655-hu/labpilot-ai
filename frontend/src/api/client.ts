@@ -69,6 +69,17 @@ export interface Preview {
   file_hash: string;
 }
 
+/** 后端明确的 HTTP 错误（4xx）。它说明后端在线但拒绝了这次请求，
+ *  例如"报告还没生成"是 404，绝不能当成"后端不可达"去切离线快照。 */
+class HttpError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'HttpError';
+    this.status = status;
+  }
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   // 线上且没配后端地址：直接快照，零等待。
   if (API_BASE === null) {
@@ -90,10 +101,14 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     });
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      throw new Error((body as { detail?: string }).detail ?? `请求失败 (${res.status})`);
+      const detail = (body as { detail?: string }).detail ?? `请求失败 (${res.status})`;
+      // 4xx = 后端在线但拒绝（资源不存在 / 参数不合法），直接抛给页面处理。
+      if (res.status < 500) throw new HttpError(detail, res.status);
+      throw new Error(detail);
     }
     return res.json() as Promise<T>;
   } catch (err) {
+    if (err instanceof HttpError) throw err;
     const reason = describeError(err);
     if (canFallback) {
       const snapshot = await offlineSnapshot(path, reason);

@@ -23,3 +23,6 @@ backend/data/*.db*
 
 # 同源部署时前端产物被复制到这里（由 一键启动.ps1 / Docker 构建生成）
 backend/static/
+
+# Qoder Sites 本地发布描述符
+*.qoder.site

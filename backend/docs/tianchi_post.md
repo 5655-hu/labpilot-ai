@@ -1,6 +1,6 @@
 # 【StudyHack】LabPilot AI：科研数据智能审计与复现助手
 
-> **提交版发帖稿** ｜ 发布前只需补齐文末 4 个占位（作品链接 / 后端地址 / 仓库 / Qoder 账号）
+> **提交版发帖稿** ｜ 4 项信息已全部填好（作品链接 / 后端地址 / 仓库 / Qoder 账号），可直接粘贴发布
 > 标题直接用上面这一行（已符合 `【赛道】作品名` 格式）
 
 ---
@@ -8,11 +8,11 @@
 关联比赛：2026 Qoder 高校创造力大赛
 参赛赛道：StudyHack 学习科研
 作品名称：LabPilot AI — 科研数据智能审计与复现助手
-作品链接：`____________`（Qoder Sites 公开地址，待填）
+作品链接：`https://labpilot-ai-7rqxdfoi89b.qoder.zone`（Qoder Sites 公开地址，未登录可访问）
 后端 API 地址：`http://8.163.38.73:8000`（阿里云轻量 · 广州 · Ubuntu 22.04 · Docker 单镜像）
 源码仓库：`https://github.com/5655-hu/labpilot-ai`
 开发工具：Qoder / Qoder Sites
-Qoder 账号：`____________`（待填，形如 nickxxxxxxxx）
+Qoder 账号：`aliyun-1006294903862617`
 当前线上版本：v0.6.0（Wave 5）
 
 ---
@@ -135,12 +135,12 @@ Qoder 账号：`____________`（待填，形如 nickxxxxxxxx）
 
 ---
 
-## 发布前检查清单（4 个占位）
+## 发布前检查清单
 
-- [ ] 作品链接（Qoder Sites 公开地址，确认**未登录也能打开**）
+- [x] 作品链接：`https://labpilot-ai-7rqxdfoi89b.qoder.zone`（Qoder Sites，public 公开，匿名访问 200 已实测）
 - [x] 后端 API 地址：`http://8.163.38.73:8000`（浏览器访问 `/health` 返回 JSON，已实测）
 - [x] 源码仓库地址：`https://github.com/5655-hu/labpilot-ai`
-- [ ] Qoder 账号名
+- [x] Qoder 账号名：`aliyun-1006294903862617`
 - [ ] 截图插入（7 张真实页面截图已在 `backend/docs/screenshots/`，按此顺序贴）：
   1. `01-dashboard.png` 首页 —— 3 个数据集 / 476 行 / 20 次分析，均为真实计数
   2. `02-audit-dirty.png` 审计 —— 质量分 **97.95**，16 缺失 / 6 重复 / 14 个待确认异常
