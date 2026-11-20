@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import Archive from './pages/Archive';
 import Audit from './pages/Audit';
@@ -8,9 +8,11 @@ import Datasets from './pages/Datasets';
 import Report from './pages/Report';
 import Stats from './pages/Stats';
 
+// 用 HashRouter 而不是 BrowserRouter：静态托管（Qoder Sites）不一定配置
+// SPA 回退规则，换成 hash 路由后刷新任意子页面都不会 404。
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />
@@ -23,6 +25,6 @@ export default function App() {
           <Route path="*" element={<Dashboard />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
