@@ -47,7 +47,7 @@ labpilot-ai/
     data/         labpilot.db（本地 SQLite）、golden/（3 份黄金演示数据 + 清单）
     schema.sql    SQLite 兼容建表语句（生产换 Turso 不用改 SQL）
     scripts/      generate_golden.py（黄金数据生成器，种子固定）、screenshot_wave*.py
-    tests/        pytest：API 测试 + 黄金数据期望值断言（93 passed）
+    tests/        pytest：API 测试 + 黄金数据期望值断言（104 passed, 1 skipped；2026-11-23 Wave 6 hardening 实测。skip = tests/test_archive.py:263，本地无 sqld，远程 libSQL 路径未验证）
     docs/         wave1~5_evidence.md、turso_setup.md、deploy_checklist.md、
                   tianchi_post.md、competition_checklist.md
   README.md
@@ -124,7 +124,7 @@ python3 -m http.server 4173 --directory dist
 ## 测试
 
 ```bash
-cd backend && .venv/bin/python -m pytest tests/ -q    # Linux/macOS：92 passed, 1 skipped
+cd backend && .venv/bin/python -m pytest tests/ -q    # Linux/macOS：104 passed, 1 skipped（Wave 6 hardening 新增 12 项；skip: tests/test_archive.py:263，本地无 sqld）
 cd backend && .venv\Scripts\python.exe -m pytest tests/ -q    # Windows
 cd frontend && npm run build                          # 通过
 ```

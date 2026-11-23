@@ -32,3 +32,8 @@ services:
       - key: FRONTEND_DIR
         value: /app/static
       # 端口由 Render 注入 PORT 环境变量，Dockerfile 的 CMD 会读取，勿写死
+      - key: TRUST_PROXY
+        value: "1"          # Render 在反代后面，取 X-Forwarded-For 才能按真实访客 IP 限流
+    # 应急开关：被刷时在控制台加 DEMO_READ_ONLY=1，冻结上传/删除（分析仍可跑）
+    # - key: DEMO_READ_ONLY
+    #   value: "1"

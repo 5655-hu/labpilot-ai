@@ -1,4 +1,4 @@
-"""Pytest fixtures: isolated temp SQLite DB, temp uploads dir, seeded golden data."""
+"""Pytest fixtures: isolated temp SQLite DB, temp uploads dir, seeded golden data, rate-limit reset."""
 import os
 import sys
 from pathlib import Path
@@ -45,3 +45,18 @@ def gemini_helper(tmp_path, monkeypatch):
     helper.write_text("# test stand-in for custom.gemini; never executed\n", encoding="utf-8")
     monkeypatch.setattr(ai_adapter, "GEMINI_HELPER", helper)
     return helper
+
+@pytest.fixture(autouse=True)
+def reset_rate_limit():
+    """Every test starts and ends with an empty rate-limit window.
+
+    The session-scoped TestClient always reports the same client IP
+    ("testclient"), so without this the suite's 39 POSTs would pile into a
+    single 30/min bucket and the later files would start getting 429.
+    reset() also re-reads RATE_LIMIT_PER_MIN / TRUST_PROXY from the env.
+    """
+    from app import ratelimit
+
+    ratelimit.reset()
+    yield
+    ratelimit.reset()
